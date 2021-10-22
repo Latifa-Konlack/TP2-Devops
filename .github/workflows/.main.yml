@@ -41,33 +41,30 @@ jobs:
   runs-on: ubuntu-latest
   # steps to perform in job
   steps:
-  - name: Checkout code
-    uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-  - name: Build image and push backend
-    uses: docker/build-push-action@v2
-
-with:
-# relative path to the place where source code with Dockerfile is located
-context: ./simple-api
-# Note: tags has to be all lower-case
-tags:${{secrets.DOCKERHUB_USERNAME}}/tp-devops-epf:simple-api
-
-  - name: Build image and push database
-   uses: docker/build-push-action@v2
-
-with:
-# relative path to the place where source code with Dockerfile is located
-context: ./database
-# Note: tags has to be all lower-case
-tags: ${{secrets.DOCKERHUB_USERNAME}}/tp-devops-epf:simple-api
-# DO the same for database
-- name: Build image and push httpd
- uses: docker/build-push-action@v2
-
-with:
-# relative path to the place where source code with Dockerfile is located
-context: ./httpd
-# Note: tags has to be all lower-case
-tags: ${{secrets.DOCKERHUB_USERNAME}}/tp-devops-epf:simple-api
-# DO the same for httpd
+      - name: Build image and push backend
+        uses: docker/build-push-action@v2
+        with:
+        # relative path to the place where source code with Dockerfile is located
+        context: ./simple-api
+        # Note: tags has to be all lower-case
+        tags: ${{secrets.DOCKERHUB_USERNAME}}/tp-devops-epf:simple-api
+        push: ${{github.ref == 'refs/heads/master' }}
+      - name: Build image and push database
+        uses: docker/build-push-action@v2
+        with:
+        # relative path to the place where source code with Dockerfile is located
+        context: ./database
+       # Note: tags has to be all lower-case
+        tags: ${{secrets.DOCKERHUB_USERNAME}}/tp-devops-epf:simple-api
+       # DO the same for database
+      - name: Build image and push httpd
+        uses: docker/build-push-action@v2
+        with:
+      # relative path to the place where source code with Dockerfile is located
+        context: ./httpd
+     # Note: tags has to be all lower-case
+        tags: ${{secrets.DOCKERHUB_USERNAME}}/tp-devops-epf:simple-api
+     # DO the same for httpd
