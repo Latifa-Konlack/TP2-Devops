@@ -114,6 +114,7 @@ jobs:
          # Note: tags has to be all lower-case
 
          tags: ${{secrets.DOCKERHUB_USERNAME}}/tp-devops-epf:database
+         push: ${{ github.ref == 'refs/heads/master' }}
 
         # DO the same for database
 
@@ -130,6 +131,7 @@ jobs:
        # Note: tags has to be all lower-case
 
          tags: ${{secrets.DOCKERHUB_USERNAME}}/tp-devops-epf:httpd
+         push: ${{ github.ref == 'refs/heads/master' }}
 
       # DO the same for httpd
 
