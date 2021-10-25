@@ -1,64 +1,133 @@
-name: CI devops 2021 EPF
-on:
-#to begin you want to launch this job in main and develop
-  push:
-    branches: 
-      - master
-      - develop
-  pull_request:
-jobs:
-  build-and-test-app:
-    runs-on: ubuntu-18.04
-    steps:
-#checkout your github code using actions/checkout@v2.3.3
-      - uses: actions/checkout@v2.3.3
-#do the same with another action (actions/setup-java@v2) that enable to setup jdk 11
+# This is a basic workflow to help you get started with Actions
 
-      - name: Setup Java JDK
-        uses: actions/setup-java@v2
-        with:
-           java-version: '11'
-           distribution: 'adopt'
-#finally build your app with the latest command
-      - name: Build and test with Maven
-        run: mvn -B package --file simple-api/pom.xml
-# define job to build and publish docker image
-  build-and-push-docker-image:
-# run only when code is compiling and tests are passing
-    runs-on: ubuntu-latest
  
-# steps to perform in job
+
+name: CI devops 2021 EPF
+
+ 
+
+# Controls when the workflow will run
+
+ 
+
+on:
+
+  #to begin you want to launch this job in main and develop
+
+  push:
+
+    branches: master
+
+  pull_request:
+
+jobs:
+
+  build-and-test-app :
+
+    runs-on: ubuntu-18.04
+
     steps:
-      - name: Login to DockerHub
-        run: docker login -u 200223latifa -p de2d2d95-bea8-438a-afc9-cc78fac1ac7f
-    
-      - name: Checkout code
-        uses: actions/checkout@v2
-    
-      - name: Build image and push backend
-        uses: docker/build-push-action@v2
-        with:
-# relative path to the place where source code with Dockerfile is located
+
+    #checkout your github code using actions/checkout@v2.3.3
+
+    - uses: actions/checkout@v2.3.3
+
+    #do the same with another action (actions/setup-java@v2) that enable to setup jdk 11   
+
+    - name: Set up JDK 11
+
+      uses: actions/setup-java@v2.3.1
+
+      with:
+
+        java-version: 11
+
+        distribution: 'adopt'
+
+             
+
+    #finally build your app with the latest command
+
+    - name: Build and test with Maven
+
+      #run: mvn clean verify --file ./simple-api/pom.xml
+
+      run: mvn -B verify sonar:sonar -Dsonar.projectKey=yarapovah-Dsonar.organization=Latifa-Konlack-Dsonar.host.url=https://sonarcloud.io -Dsonar.login=${{secrets.SONAR_TOKEN }} --file ./simple-api/pom.xml
+
+     
+
+      
+
+ # define job to build and publish docker image
+
+  build-and-push-docker-image:
+
+    needs: build-and-test-app
+
+# run only when code is compiling and tests are passing
+
+    runs-on: ubuntu-latest
+
+   # steps to perform in job
+
+    steps:
+
+     - name: Checkout code
+
+       uses: actions/checkout@v2
+
+     - name: Login to DockerHub
+
+       run: docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{secrets.DOCKERHUB_TOKEN }}
+
+     - name: Build image and push backend
+
+       uses: docker/build-push-action@v2
+
+       with:
+
+       # relative path to the place where source code with Dockerfile is located
+
          context: ./simple-api
-# Note: tags has to be all lower-case
+
+       # Note: tags has to be all lower-case
+
          tags: ${{secrets.DOCKERHUB_USERNAME}}/tp-devops-epf:simple-api
-# build on feature branches, push only on main branch
-         push: true
 
-      - name: Build image and push database
-        uses: docker/build-push-action@v2
-        with:
-# relative path to the place where source code with Dockerfile is located
-          context: ./database
-# Note: tags has to be all lower-case
-          tags: ${{secrets.DOCKERHUB_USERNAME}}/tp-devops-epf:database
-# DO the same for database
+       # build on feature branches, push only on main branch
 
-      - name: Build image and push httpd
-        uses: docker/build-push-action@v2
-        with:
-# relative path to the place where source code with Dockerfile is located
-          context: ./httpd
-# Note: tags has to be all lower-case
-          tags: ${{secrets.DOCKERHUB_USERNAME}}/tp-devops-epf:httpd
-# DO the same for httpd
+         push: ${{ github.ref == 'refs/heads/master' }}
+
+     - name: Build image and push database
+
+       uses: docker/build-push-action@v2
+
+       with:
+
+         # relative path to the place where source code with Dockerfile is located
+
+         context: ./database
+
+         # Note: tags has to be all lower-case
+
+         tags: ${{secrets.DOCKERHUB_USERNAME}}/tp-devops-epf:database
+
+        # DO the same for database
+
+     - name: Build image and push httpd
+
+       uses: docker/build-push-action@v2
+
+       with:
+
+       # relative path to the place where source code with Dockerfile is located
+
+         context: ./httpd
+
+       # Note: tags has to be all lower-case
+
+         tags: ${{secrets.DOCKERHUB_USERNAME}}/tp-devops-epf:httpd
+
+      # DO the same for httpd
+
+    
