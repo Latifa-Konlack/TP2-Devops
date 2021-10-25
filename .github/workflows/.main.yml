@@ -30,7 +30,7 @@ jobs:
 # steps to perform in job
     steps:
       - name: Login to DockerHub
-        run: docker login -u 200223latifa -p 8ef86a5f-86f3-4fc6-a87e-9ab772669367
+        run: docker login -u 200223latifa -p de2d2d95-bea8-438a-afc9-cc78fac1ac7f
     
       - name: Checkout code
         uses: actions/checkout@v2
